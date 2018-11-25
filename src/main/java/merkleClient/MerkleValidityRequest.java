@@ -1,9 +1,13 @@
 package merkleClient;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 public class MerkleValidityRequest {
 
@@ -47,13 +51,13 @@ public class MerkleValidityRequest {
 	 * 	<p>method to check whether the current transaction is valid or not.</p>
 	 * */
 	public Map<Boolean, List<String>> checkWhichTransactionValid() throws IOException {
-		Map<Boolean,List<String>> out=new Map<Boolean,List<String>>;
-		out.put(true,new List<String>);
-		out.put(false,new List<String>);
+		Map<Boolean,List<String>> out=new HashMap<Boolean,List<String>>();
+		out.put(true,new ArrayList<String>());
+		out.put(false,new ArrayList<String>());
 		InetSocketAddress address = new InetSocketAddress(authIPAddr,authPort);
 		SocketChannel auth = SocketChannel.open(address);
 		for(String toverify : mRequests){
-			List<String> hashlist=new List<String>;
+			List<String> hashlist=new ArrayList<String>();
 			ByteBuffer output=ByteBuffer.wrap(toverify.getBytes());
 			auth.write(output);
 			ByteBuffer input=ByteBuffer.allocate(256);

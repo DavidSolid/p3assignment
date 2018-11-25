@@ -3,6 +3,8 @@ package multiset;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * <p>A MultiSet models a data structure containing elements along with their frequency count i.e., </p>
@@ -20,7 +22,7 @@ public final class HashMultiSet<T, V> {
 	/**
 	 * Sole constructor of the class.
 	 **/
-	public HashMultiSet() {content=new Hashmap();}
+	public HashMultiSet() {content=new HashMap<T,V>();}
 	
 	
 	/**
@@ -34,7 +36,7 @@ public final class HashMultiSet<T, V> {
 	public V addElement(T t) {
 		V counter=content.get(t);
 		if(counter==null){
-			counter=1;
+			counter=new V();
 			content.put(t,counter);
 		}
 		else{
