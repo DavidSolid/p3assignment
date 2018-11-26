@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+//import java.util.stream.*;
 
 public class MerkleValidityRequest {
 
@@ -51,23 +52,24 @@ public class MerkleValidityRequest {
 	 * 	<p>method to check whether the current transaction is valid or not.</p>
 	 * */
 	public Map<Boolean, List<String>> checkWhichTransactionValid() throws IOException {
-		Map<Boolean,List<String>> out=new HashMap<Boolean,List<String>>();
+		Map<Boolean,List<String>> out= new HashMap<Boolean,List<String>>();
 		out.put(true,new ArrayList<String>());
 		out.put(false,new ArrayList<String>());
 		InetSocketAddress address = new InetSocketAddress(authIPAddr,authPort);
-		SocketChannel auth = SocketChannel.open(address);
 		for(String toverify : mRequests){
 			List<String> hashlist=new ArrayList<String>();
+			SocketChannel auth = SocketChannel.open(address);
 			ByteBuffer output=ByteBuffer.wrap(toverify.getBytes());
 			auth.write(output);
 			ByteBuffer input=ByteBuffer.allocate(256);
 			while(auth.read(input)!=-1){
-				if(input.remaining()==0){
-					String hash=new String(input.array()).trim();
-					hashlist.add(hash);
-					System.err.println("Ricevuto hash: "+hash);
-				}
+				String hash=new String(input.array()).trim();
+				hashlist.add(hash);
+				System.out.println("Ricevuto hash: "+hash);
+				input.clear();
 			}
+			auth.close();
+			System.out.println("Tutti gli hash ricevuti");
 			if(isTransactionValid(toverify,hashlist)){
 				out.get(true).add(toverify);
 			}
@@ -76,6 +78,21 @@ public class MerkleValidityRequest {
 			}
 		}
 		return out;
+		//functional approach
+		/*return mRequests.stream().collect(Collectors.partitioningBy((t)->{
+			ByteBuffer output=ByteBuffer.wrap(t.getBytes());
+			auth.write(output);
+			List<String> hashlist=new ArrayList<String>();
+			ByteBuffer input=ByteBuffer.allocate(256);
+			while(auth.read(input)!=-1){
+				if(input.remaining()==0){
+					String hash=new String(input.array()).trim();
+					hashlist.add(hash);
+					System.out.println("Ricevuto hash: "+hash);
+				}
+			}
+			return isTransactionValid(t,hashlist);
+		}));*/
 	}
 	
 	/**

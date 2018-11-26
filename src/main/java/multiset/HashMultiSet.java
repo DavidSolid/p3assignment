@@ -3,7 +3,7 @@ package multiset;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
+//import java.util.Map;
 import java.util.HashMap;
 
 /**
@@ -34,15 +34,14 @@ public final class HashMultiSet<T, V> {
 	 * @return V: frequency count of the element in the multiset
 	 * */	
 	public V addElement(T t) {
-		V counter=content.get(t);
+		Integer counter=(Integer)content.get(t);
 		if(counter==null){
-			counter=new V();
-			content.put(t,counter);
+			counter=1;
 		}
 		else{
 			counter++;
 		}
-		return counter;		
+		return content.put(t,(V)counter);		
 	}
 
 	/**
@@ -83,6 +82,7 @@ public final class HashMultiSet<T, V> {
 	 * @param source List<T>: source of the multiset
 	 * */
 	public void buildFromCollection(List<? extends T> source) {
+		if(source==null) throw new IllegalArgumentException("Method should be invoked with a non null file path");
 		source.stream().forEach((t)->addElement(t));
 	}
 	
@@ -93,11 +93,11 @@ public final class HashMultiSet<T, V> {
 	 * @return List<T>: linearized version of the multiset represented by this object.
 	 */
 	public List<T> linearize() {
-		List<T> result;
-		content.entryset().stream().forEach((t)->{
-			for(int i=0 : t.getValue()){
+		List<T> result=null;
+		content.entrySet().stream().forEach((t)->{
+			/*for(int i=0;i<t.getValue();i++){
 				result.add(t.getKey());
-			}
+			}*/
 		});	
 		return result;
 	}
